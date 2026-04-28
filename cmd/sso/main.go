@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/noctusha/sso/internal/app"
 	"github.com/noctusha/sso/internal/config"
 	"github.com/noctusha/sso/internal/lib/logger/handlers/slogpretty"
 )
@@ -25,9 +28,22 @@ func main() {
 		slog.Any("config", cfg),
 	)
 
-	// TODO: init app
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+
+	go application.GRPCSrv.MustRun()
 
 	// TODO: run gRPC server
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	signal := <-stop
+
+	log.Info("stopping application", slog.String("signal", signal.String()))
+
+	application.GRPCSrv.Stop()
+
+	log.Info("applicaiton stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
