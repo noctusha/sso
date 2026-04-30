@@ -39,6 +39,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrInvalidAppID       = errors.New("invalid app id")
 	ErrUserExists         = errors.New("user already exists")
+	ErrUserNotFound       = errors.New("user not found")
 )
 
 func New(log *slog.Logger, userSaver UserSaver, userProvider UserProvider, appProvider AppProvider, tokenTTL time.Duration) *Auth {
@@ -64,8 +65,6 @@ func (a *Auth) Login(ctx context.Context, email string, pass string, appID int) 
 	)
 
 	log.Info("attempting to login user")
-
-	// User(ctx context.Context, email string) (models.User, error)
 
 	user, err := a.userProvider.User(ctx, email)
 	if err != nil {
