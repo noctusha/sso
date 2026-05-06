@@ -28,7 +28,7 @@ func main() {
 		slog.Any("config", cfg),
 	)
 
-	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+	application := app.New(log, cfg.GRPC.Port, cfg.StoragePath, cfg.RedisAddress, cfg.TokenTTL)
 
 	go application.GRPCSrv.MustRun()
 
