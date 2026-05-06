@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	ssov1 "github.com/noctusha/sso-protos/gen/go/sso"
 	"github.com/noctusha/sso/internal/services/auth"
@@ -18,7 +17,7 @@ type Auth interface {
 	IsAdmin(ctx context.Context, userID int64) (bool, error)
 }
 type serverAPI struct {
-	ssov1.UnimplementedAuthServer // можно опустить, если все методы из gRPC (protos) будут реализованы и тут
+	ssov1.UnimplementedAuthServer // заглушка. Можно опустить, если все методы из gRPC (protos) будут реализованы и тут
 	auth                          Auth
 }
 
@@ -40,7 +39,6 @@ func (s *serverAPI) Login(ctx context.Context, req *ssov1.LoginRequest) (*ssov1.
 		if errors.Is(err, auth.ErrInvalidCredentials) {
 			return nil, status.Error(codes.InvalidArgument, "invalid email or password")
 		}
-		fmt.Println("login error:", err)
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
